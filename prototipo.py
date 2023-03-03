@@ -4,56 +4,63 @@ from tkinter import messagebox
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from datetime import datetime
-
-
+from tqdm import tqdm
 
 ########################   funciones   #################################
 
 def search():
+    try:
+        # Creamos la query
+        query = f'{palabra_string.get()} since:{fecha_inicio_string.get()} until:{fecha_fin_string.get()}'
+        ciudad = ciudad_string.get()
+        usuario = usuario_string.get()
+        max_tweets = int(limite_int.get()) if limite_int.get() else 100
 
-    # Creamos la query
-    query = f'{palabraString.get()} since:{FechaInicioString.get()} until:{FechaFinString.get()}'
-    ciudad = CiudadString.get()
-    usuario = UsuarioString.get()
-    maxTweets = int(LimiteInt.get()) if LimiteInt.get() else 100  # TENGO QUE CAMBIAR ESTO  
+        # Preparar la búsqueda con parámetros adicionales si hubiera
+        query += f' {"near:"+ciudad}' if ciudad else ''
+        query += f' {"from:"+usuario}' if usuario else ''
 
-    # Preparar la búsqueda
-    query += f' {"near:"+ciudad}' if ciudad else ''
-    query += f' {"from:"+usuario}' if usuario else ''
-        
-    tweets = []
-    for tweet in sntwitter.TwitterSearchScraper(query).get_items():
-        if len(tweets) == maxTweets:
-            break
-        else:
-            tweets.append([tweet.date, tweet.user.username, tweet.user.displayname, tweet.rawContent])
-    
-    # Mostrar los resultados de la búsqueda en la consola
-    df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
-    print(df)
+        # Realizar la búsqueda
+        tweets = []
+        # Utilizo modulo tqdm para mostrar el progreso de la búsqueda
+        # https://github.com/tqdm/tqdm#installation
+        with tqdm(total=max_tweets) as pbar:
+            for tweet in sntwitter.TwitterSearchScraper(query).get_items():
+                if len(tweets) == max_tweets:
+                    break
+                else:
+                    tweets.append([tweet.date, tweet.user.username, tweet.user.displayname, tweet.rawContent])
+                    pbar.update(1)
 
-    # Actualizar la etiqueta de resultado
-    resultadosString.set(f'Se encontraron {len(tweets)} tweets')
+        # Mostrar los resultados de la búsqueda en la consola
+        df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
+        print(df)
 
-    # Devolver los tweets para guardarlos en un archivo Excel
-    return tweets
+        # Actualizar la etiqueta de resultado
+        resultados_string.set(f'Se han encontrado {len(tweets)} tweets')
+
+        # Devolver lista con los tweets encontrados
+        return tweets
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
 
 
 def storesearch():
-    # Guardar los tweets en un archivo Excel
-    filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
-    tweets = search()
-    if tweets:
-        df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
-        # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
-        df['Datetime'] = [celda.replace(tzinfo=None) for celda in df['Datetime']]
-        # transfiero el dataframe a un archivo excel
-        df.to_excel(filename, index=False)
-        resultadosString2.set(f'Los resultados se guardaron en {filename}')
-    else:
-        resultadosString2.set('No se encontraron tweets para guardar')
-    return
-
+    try:
+        # Guardar los tweets en un archivo Excel
+        filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
+        tweets = search()
+        if tweets:
+            df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
+            # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
+            df['Datetime'] = [celda.replace(tzinfo=None) for celda in df['Datetime']]
+            # transfiero el dataframe a un archivo excel
+            df.to_excel(filename, index=False)
+            resultados_string2.set(f'Los resultados se han guardado en {filename}')
+        else:
+            resultados_string2.set('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
+    except Exception as e:
+         messagebox.showerror("Error", str(e))
 
 ########################################################################
 
@@ -63,68 +70,48 @@ widget = tk.Tk()
 widget.geometry('900x300')
 widget.title(" TFG Aitor - Twitter")
 # Busqueda por palabra
-labelpalabra = tk.Label(widget,text="Palabra a buscar: ")
-labelpalabra.grid(column=0, row=0, sticky=tk.W)
+label_palabra = tk.Label(widget,text="Palabra a buscar: ").grid(column=0, row=0, sticky=tk.W)
 # Busqueda por fecha
-labelFechaInicio = tk.Label(widget, text="Desde Fecha: (yyyy-mm-dd) ")
-labelFechaInicio.grid(column=0, row=1, sticky=tk.W)
-labelFechaFin = tk.Label(widget, text="Hasta fecha: (yyyy-mm-dd) ")
-labelFechaFin.grid(column=0, row=2, sticky=tk.W)
+label_fecha_inicio = tk.Label(widget, text="Desde Fecha: (yyyy-mm-dd) ").grid(column=0, row=1, sticky=tk.W)
+label_fecha_fin = tk.Label(widget, text="Hasta fecha: (yyyy-mm-dd) ").grid(column=0, row=2, sticky=tk.W)
 # Busqueda por ciudad
-labelCiudad = tk.Label(widget, text="En Ciudad: ")
-labelCiudad.grid(column=0, row=3, sticky=tk.W)
-
-labelUsuario = tk.Label(widget, text="De Usuario: ")
-labelUsuario.grid(column=0, row=4, sticky=tk.W)
+label_ciudad = tk.Label(widget, text="En Ciudad: ").grid(column=0, row=3, sticky=tk.W)
+label_usuario = tk.Label(widget, text="De Usuario: ").grid(column=0, row=4, sticky=tk.W)
 # Limite de tweets
-labelLimite = tk.Label(widget, text="Número Máximo Tweets: \n (por defecto 100)")
-labelLimite.grid(column=0, row=5, sticky=tk.W)
+label_limite = tk.Label(widget, text="Número Máximo Tweets: \n (por defecto 100)").grid(column=0, row=5, sticky=tk.W)
 
 # Variables
-
-palabraString = tk.StringVar()
-FechaInicioString = tk.StringVar()
-FechaFinString = tk.StringVar()
-CiudadString = tk.StringVar()
-UsuarioString = tk.StringVar()
-LimiteInt = tk.StringVar()
+palabra_string = tk.StringVar()
+fecha_inicio_string = tk.StringVar()
+fecha_fin_string = tk.StringVar()
+ciudad_string = tk.StringVar()
+usuario_string = tk.StringVar()
+limite_int = tk.StringVar()
 
 # Entradas de texto
-entrypalabra = tk.Entry(widget, width=30, textvariable=palabraString)
-entryFechaInicio = tk.Entry(widget, width=30, textvariable=FechaInicioString)
-entryFechaFin = tk.Entry(widget, width=30, textvariable=FechaFinString)
-entryCiudad = tk.Entry(widget, width=30, textvariable=CiudadString)
-entryUsuario = tk.Entry(widget, width=30, textvariable=UsuarioString)
-entryLimite = tk.Entry(widget, width=30, textvariable=LimiteInt)
-
-# Pack de entradas de texto
-entrypalabra.grid(column=1, row=0, padx=10)
-entryFechaInicio.grid(column=1, row=1, padx=10)
-entryFechaFin.grid(column=1, row=2, padx=10)
-entryCiudad.grid(column=1, row=3, padx=10)
-entryUsuario.grid(column=1, row=4, padx=10)
-entryLimite.grid(column=1, row=5, padx=10)
+entry_palabra = tk.Entry(widget, width=30, textvariable=palabra_string).grid(column=1, row=0, padx=10)
+entry_fecha_inicio = tk.Entry(widget, width=30, textvariable=fecha_inicio_string).grid(column=1, row=1, padx=10)
+entry_fecha_fin = tk.Entry(widget, width=30, textvariable=fecha_fin_string).grid(column=1, row=2, padx=10)
+entry_ciudad = tk.Entry(widget, width=30, textvariable=ciudad_string).grid(column=1, row=3, padx=10)
+entry_usuario = tk.Entry(widget, width=30, textvariable=usuario_string).grid(column=1, row=4, padx=10)
+entry_limite = tk.Entry(widget, width=30, textvariable=limite_int).grid(column=1, row=5, padx=10)
 
 # Botones
-buttonResultados = tk.Button(widget, text='Buscar Tweets', command=search)
-buttonResultados.grid(column=1, row=6, pady=10, sticky=tk.W)
-buttont2excel = tk.Button(widget, text='Guardar Resultados en Excel', command=storesearch)
-buttont2excel.grid(column=1, row=7, pady=10, sticky=tk.W)
-buttonQuit = tk.Button(widget, text="Salir", command=widget.quit)
-buttonQuit.grid(column=1, row=8, pady=10, sticky=tk.W)
-
+button_resultados = tk.Button(widget, text='Buscar Tweets', command=search).grid(column=1, row=6, pady=10, sticky=tk.W)
+button_t2excel = tk.Button(widget, text='Guardar Resultados en Excel', command=storesearch).grid(column=1, row=7, pady=10, sticky=tk.W)
+button_quit = tk.Button(widget, text="Salir", command=widget.quit).grid(column=1, row=8, pady=10, sticky=tk.W)
 # Icono
 icono = tk.PhotoImage(file="icono.png")
-labellIcono = tk.Label(image=icono)
-labellIcono.grid(column=2, row=0, rowspan=6, padx=10)
+label_icono = tk.Label(image=icono).grid(column=2, row=0, rowspan=6, padx=10)
 
 # Etiqueta de resultado
-resultadosString = tk.StringVar()
-labellResultados = tk.Label(widget, textvariable=resultadosString)
-labellResultados.grid(column=2, row=6, padx=10, sticky=tk.W)
-resultadosString2 = tk.StringVar()
-labellResultados2 = tk.Label(widget, textvariable=resultadosString2)
-labellResultados2.grid(column=2, row=7, padx=10, sticky=tk.W)
+resultados_string = tk.StringVar()
+resultados_string2 = tk.StringVar()
+
+label_resultados = tk.Label(widget, textvariable=resultados_string).grid(column=2, row=6, padx=10)
+label_resultados2 = tk.Label(widget, textvariable=resultados_string2).grid(column=2, row=7, padx=10)
 
 widget.mainloop()
+
+
 

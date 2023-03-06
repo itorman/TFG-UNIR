@@ -4,14 +4,24 @@ from tkinter import messagebox
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from datetime import datetime
+import os
 from tqdm import tqdm
 import nltk
-
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+nltk.download('93mwordnet')
+nltk.download('stopwords')
+nltk.download('punkt')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+import regex as re
 
 ########################   funciones   #################################
 
 def search():
     try:
+        print('Buscando tweets...')
         # Creamos la query
         query = f'{palabra_string.get()} since:{fecha_inicio_string.get()} until:{fecha_fin_string.get()}'
         ciudad = ciudad_string.get()
@@ -58,17 +68,7 @@ def storesearch():
         tweets = search()
         if tweets:
             df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
-############################# NEW FEATURE LIMPIAR TWEETS ########################################
-            # Limpiar los tweets
-            # Eliminar los caracteres especiales
-            for tweet in df['Contenido']:
-                tokenizer = nltk.RegexpTokenizer(r"\w+")
-                Tokens = tokenizer.tokenize(tweet)
-                
 
-
-
-###############################################################################################
             # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
             df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
             # transfiero el dataframe a un archivo excel
@@ -77,14 +77,71 @@ def storesearch():
         else:
             resultados_string2.set('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
     except Exception as e:
-         messagebox.showerror("Error", str(e))
+        messagebox.showerror("Error", str(e))
 
-########################################################################
+
+############################# NEW FEATURE LIMPIAR TWEETS ########################################
+def cleanData():
+    try:
+        # Proceso de limpia de los tweets   
+        filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "__tweets_limpios.xlsx"
+        tweets = search()
+        if tweets:
+            # para evitar de error en la descarga de nltk (nltk.download()
+            
+            
+
+            df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
+            columna_contenido = df['Contenido']
+            # Limpiar los tweets
+            # Eliminar los caracteres no occidentales
+            columna_contenido = [re.sub(r'[^\x00-\x7F]+', '', texto) for texto in columna_contenido]
+            # Eliminar los signos de puntuación
+            columna_contenido = [re.sub(r'[^\w\s]', '', texto) for texto in columna_contenido]
+            # Eliminar los números
+            columna_contenido = [re.sub(r'\d+', '', texto) for texto in columna_contenido]
+            # Eliminar los espacios en blanco
+            columna_contenido = [re.sub(r'\s+', ' ', texto) for texto in columna_contenido]
+                
+            # tokeniza el texto en la columna utilizando la función 'word_tokenize' de la librería nltk
+            tokens = [word_tokenize(texto) for texto in columna_contenido]
+            # mayusculas a minusculas
+            tokens = [[palabra.lower() for palabra in texto] for texto in tokens]
+            # elminna las stopwords (palabras que no aportan significado)
+            stop_words = set(stopwords.words('english')) # Cambiar 'english' por el idioma que deseemos
+            tokens = [[palabra for palabra in texto if not palabra in stop_words] for texto in tokens]
+            # lemantizar los tokens (las convierte a su forma raiz)
+            lemmatizer = WordNetLemmatizer()
+            tokens = [[lemmatizer.lemmatize(palabra) for palabra in texto] for texto in tokens]
+            # unir los tokens en una cadena de texto separados por espacios
+            texto_limpio = [' '.join(texto) for texto in tokens]
+            # 
+
+
+
+            # añadir la columna con los tweets limpios al dataframe
+            df['Contenido'] = texto_limpio
+
+            ## Guardar los tweets limpios en un archivo Excel ##
+            # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
+            df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
+            # transfiero el dataframe a un archivo excel
+            df.to_excel(filename, index=False)
+            resultados_string3.set(f'Los resultados se han guardado en {filename}')
+        else:
+            resultados_string3.set('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+    return      
+
+
+
+###############################################################################################
 
 # Incio del widget
 
 widget = tk.Tk()
-widget.geometry('900x300')
+widget.geometry('1000x370')
 widget.title(" TFG Aitor - Twitter")
 # Busqueda por palabra
 label_palabra = tk.Label(widget,text="Palabra a buscar: ").grid(column=0, row=0, sticky=tk.W)
@@ -116,19 +173,19 @@ entry_limite = tk.Entry(widget, width=30, textvariable=limite_int).grid(column=1
 # Botones
 button_resultados = tk.Button(widget, text='Buscar Tweets', command=search).grid(column=1, row=6, pady=10, sticky=tk.W)
 button_t2excel = tk.Button(widget, text='Guardar Resultados en Excel', command=storesearch).grid(column=1, row=7, pady=10, sticky=tk.W)
-button_quit = tk.Button(widget, text="Salir", command=widget.quit).grid(column=1, row=8, pady=10, sticky=tk.W)
+button_limpiar = tk.Button(widget, text='Limpia los datos', command=cleanData).grid(column=1, row=8, pady=10, sticky=tk.W)
+button_quit = tk.Button(widget, text="Salir", command=widget.quit).grid(column=1, row=10, pady=10, sticky=tk.W)
 # Icono
 icono = tk.PhotoImage(file="icono.png")
-label_icono = tk.Label(image=icono).grid(column=2, row=0, rowspan=6, padx=10)
+label_icono = tk.Label(image=icono).grid(column=0, row=6, rowspan=6, padx=8)
 
 # Etiqueta de resultado
 resultados_string = tk.StringVar()
 resultados_string2 = tk.StringVar()
+resultados_string3 = tk.StringVar()
 
 label_resultados = tk.Label(widget, textvariable=resultados_string).grid(column=2, row=6, padx=10)
 label_resultados2 = tk.Label(widget, textvariable=resultados_string2).grid(column=2, row=7, padx=10)
+label_resultados3 = tk.Label(widget, textvariable=resultados_string3).grid(column=2, row=8, padx=10)
 
 widget.mainloop()
-
-
-

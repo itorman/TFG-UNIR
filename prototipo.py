@@ -87,10 +87,7 @@ def cleanData():
         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "__tweets_limpios.xlsx"
         tweets = search()
         if tweets:
-            # para evitar de error en la descarga de nltk (nltk.download()
-            
-            
-
+            # para evitar de error en la descarga de nltk -->nltk.download()
             df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
             columna_contenido = df['Contenido']
             # Limpiar los tweets
@@ -115,10 +112,13 @@ def cleanData():
             tokens = [[lemmatizer.lemmatize(palabra) for palabra in texto] for texto in tokens]
             # unir los tokens en una cadena de texto separados por espacios
             texto_limpio = [' '.join(texto) for texto in tokens]
-            # 
-
-
-
+            # eliminar referencias html
+            texto_limpio = [re.sub(r'http\S+', '', texto) for texto in texto_limpio]
+            # eliminar referencias a usuarios
+            texto_limpio = [re.sub(r'@(\w+)', '', texto) for texto in texto_limpio]
+            # eliminar el "#" de los hashtags
+            texto_limpio = [re.sub(r'#', '', texto) for texto in texto_limpio]
+           
             # añadir la columna con los tweets limpios al dataframe
             df['Contenido'] = texto_limpio
 

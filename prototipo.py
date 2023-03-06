@@ -5,6 +5,8 @@ import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
+import nltk
+
 
 ########################   funciones   #################################
 
@@ -29,17 +31,21 @@ def search():
                 if len(tweets) == max_tweets:
                     break
                 else:
-                    tweets.append([tweet.date, tweet.user.username, tweet.user.displayname, tweet.rawContent])
+                    tweets.append([tweet.date, tweet.user.username, tweet.user.displayname, tweet.rawContent, tweet.place])
                     pbar.update(1)
 
         # Mostrar los resultados de la búsqueda en la consola
-        df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
-        print(df)
+        df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
+        # si el df no esta vacio imprimirlo en pantalla
+        if not df.empty:
+            print(df)
+        else:
+            print('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
 
-        # Actualizar la etiqueta de resultado
+        # Actualizar la etiqueta de resultado en el widget
         resultados_string.set(f'Se han encontrado {len(tweets)} tweets')
 
-        # Devolver lista con los tweets encontrados
+        # Retorna la lista con los tweets encontrados
         return tweets
     except Exception as e:
         messagebox.showerror("Error", str(e))
@@ -51,9 +57,20 @@ def storesearch():
         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
         tweets = search()
         if tweets:
-            df = pd.DataFrame(tweets, columns=['Datetime', 'User', 'Username', 'Content'])
+            df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
+############################# NEW FEATURE LIMPIAR TWEETS ########################################
+            # Limpiar los tweets
+            # Eliminar los caracteres especiales
+            for tweet in df['Contenido']:
+                tokenizer = nltk.RegexpTokenizer(r"\w+")
+                Tokens = tokenizer.tokenize(tweet)
+                
+
+
+
+###############################################################################################
             # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
-            df['Datetime'] = [celda.replace(tzinfo=None) for celda in df['Datetime']]
+            df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
             # transfiero el dataframe a un archivo excel
             df.to_excel(filename, index=False)
             resultados_string2.set(f'Los resultados se han guardado en {filename}')

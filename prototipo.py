@@ -16,11 +16,19 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import regex as re
+from textblob import TextBlob
+
 
 ########################   funciones   #################################
 
 def search():
+    ''''
+    Función que realiza la búsqueda de tweets en Twitter
+    Los parámetros de búsqueda se obtienen de los widgets de la interfaz gráfica
+    '''
     try:
+        # borrar el contenido del label de resultados
+        resultados_string.set('')
         print('Buscando tweets...')
         # Creamos la query
         query = f'{palabra_string.get()} since:{fecha_inicio_string.get()} until:{fecha_fin_string.get()}'
@@ -64,7 +72,13 @@ def search():
 
 
 def storesearch():
+    ''''
+    Función que realiza la búsqueda de tweets en Twitter y los guarda en un archivo Excel
+    Los parámetros de búsqueda se obtienen de los widgets de la interfaz gráfica
+    '''
     try:
+        # limpiar el label de resultados2
+        resultados_string2.set('')
         # Guardar los tweets en un archivo Excel
         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
         tweets = search()
@@ -84,7 +98,13 @@ def storesearch():
 
 ############################# NEW FEATURE LIMPIAR TWEETS ########################################
 def cleanData():
+    ''''
+    Función que realiza la búsqueda de tweets en Twitter, los pre-procesa, y los guarda en un archivo Excel
+    Los parámetros de búsqueda se obtienen de los widgets de la interfaz gráfica
+    '''
     try:
+        # limpiar el label de resultados3
+        resultados_string3.set('')
         # Proceso de limpia de los tweets   
         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "__tweets_limpios.xlsx"
         tweets = search()
@@ -107,8 +127,7 @@ def cleanData():
             columna_contenido = [re.sub(r'\d+', '', texto) for texto in columna_contenido]
             # Eliminar los espacios en blanco
             columna_contenido = [re.sub(r'\s+', ' ', texto) for texto in columna_contenido]
-           
-                
+        
             # tokeniza el texto en la columna utilizando la función 'word_tokenize' de la librería nltk
             tokens = [word_tokenize(texto) for texto in columna_contenido]
             # mayusculas a minusculas
@@ -139,14 +158,54 @@ def cleanData():
         messagebox.showerror("Error", str(e))
     return      
 
+# def classify():
+#     try:
+#         # Cargar el modelo de clasificación
+#         filename = 'modelo_clasificacion.sav'
+#         modelo = pickle.load(open(filename, 'rb'))
+#         # Cargar el vectorizador
+#         filename = 'vectorizador.sav'
+#         vectorizador = pickle.load(open(filename, 'rb'))
+#         # Cargar el dataframe con los tweets
+#         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
+#         df = pd.read_excel(filename)
+#         # Preparar los datos
+#         texto = df['Contenido']
+#         # Vectorizar los tweets
+#         X = vectorizador.transform(texto)
+#         # Predecir las categorías
+#         y_pred = modelo.predict(X)
+#         # Añadir la columna con las categorías al dataframe
+#         df['Categoria'] = y_pred
+#         # Guardar el dataframe con las categorías
+#         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_categorizados.xlsx"
+#         df.to_excel(filename, index=False)
+#         resultados_string4.set(f'Los resultados se han guardado en {filename}')
+#     except Exception as e:
+#         messagebox.showerror("Error", str(e))
 
+def classify():
+    ''''
+    Función para clasificar los tweets en positivos y negativos
+    '''
+    # limpiar el label de resultados3
+    resultados_string4.set('')
+    clasificacion = TextBlob("fuck de whites. they will know what it is like to be a minority.")
+    if clasificacion.sentiment.polarity > 0:
+        print('positive')
+    elif clasificacion.sentiment.polarity == 0:
+        print('neutral')
+    else:
+        print('negative')
+
+    
 
 ###############################################################################################
 
 # Incio del widget
 
 widget = tk.Tk()
-widget.geometry('1000x400')
+widget.geometry('1050x430')
 widget.title(" TFG Aitor - Twitter")
 # Busqueda por palabra
 label_palabra = tk.Label(widget,text="Palabra o hastag a buscar: ").grid(column=0, row=0, sticky=tk.W)
@@ -184,18 +243,21 @@ entry_limite = tk.Entry(widget, width=30, textvariable=limite_int).grid(column=1
 button_resultados = tk.Button(widget, text='Buscar Tweets', command=search).grid(column=1, row=7, pady=10, sticky=tk.W)
 button_t2excel = tk.Button(widget, text='Guardar Resultados en Excel', command=storesearch).grid(column=1, row=8, pady=10, sticky=tk.W)
 button_limpiar = tk.Button(widget, text='Limpia los datos', command=cleanData).grid(column=1, row=9, pady=10, sticky=tk.W)
+button_clasificar = tk.Button(widget, text='Clasificar Tweets', command=classify).grid(column=1, row=10, pady=10, sticky=tk.W)
 button_quit = tk.Button(widget, text="Salir", command=widget.quit).grid(column=1, row=11, pady=10, sticky=tk.W)
 # Icono
-icono = tk.PhotoImage(file="icono.png")
+icono = tk.PhotoImage(file="./static/icono.png")
 label_icono = tk.Label(image=icono).grid(column=0, row=6, rowspan=6, padx=8)
 
 # Etiqueta de resultado
 resultados_string = tk.StringVar()
 resultados_string2 = tk.StringVar()
 resultados_string3 = tk.StringVar()
+resultados_string4 = tk.StringVar()
 
-label_resultados = tk.Label(widget, textvariable=resultados_string).grid(column=2, row=6, padx=10)
-label_resultados2 = tk.Label(widget, textvariable=resultados_string2).grid(column=2, row=7, padx=10)
-label_resultados3 = tk.Label(widget, textvariable=resultados_string3).grid(column=2, row=8, padx=10)
+label_resultados = tk.Label(widget, textvariable=resultados_string).grid(column=2, row=7, padx=10)
+label_resultados2 = tk.Label(widget, textvariable=resultados_string2).grid(column=2, row=8, padx=10)
+label_resultados3 = tk.Label(widget, textvariable=resultados_string3).grid(column=2, row=9, padx=10)
+label_resultados4 = tk.Label(widget, textvariable=resultados_string4).grid(column=2, row=10, padx=10)
 
 widget.mainloop()

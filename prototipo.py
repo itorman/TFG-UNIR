@@ -1,10 +1,11 @@
-
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
+import pickle
 from datetime import datetime
-import os
+import regex as re
 from tqdm import tqdm
 import nltk
 import ssl
@@ -15,8 +16,7 @@ nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import regex as re
-from textblob import TextBlob
+
 
 
 ########################   funciones   #################################
@@ -141,8 +141,6 @@ def cleanData():
             # unir los tokens en una cadena de texto separados por espacios
             texto_limpio = [' '.join(texto) for texto in tokens]
             
-            
-        
             # añadir la columna con los tweets limpios al dataframe
             df['Contenido'] = texto_limpio
 
@@ -157,50 +155,60 @@ def cleanData():
     except Exception as e:
         messagebox.showerror("Error", str(e))
     return      
-
-# def classify():
-#     try:
-#         # Cargar el modelo de clasificación
-#         filename = 'modelo_clasificacion.sav'
-#         modelo = pickle.load(open(filename, 'rb'))
-#         # Cargar el vectorizador
-#         filename = 'vectorizador.sav'
-#         vectorizador = pickle.load(open(filename, 'rb'))
-#         # Cargar el dataframe con los tweets
-#         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
-#         df = pd.read_excel(filename)
-#         # Preparar los datos
-#         texto = df['Contenido']
-#         # Vectorizar los tweets
-#         X = vectorizador.transform(texto)
-#         # Predecir las categorías
-#         y_pred = modelo.predict(X)
-#         # Añadir la columna con las categorías al dataframe
-#         df['Categoria'] = y_pred
-#         # Guardar el dataframe con las categorías
-#         filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_categorizados.xlsx"
-#         df.to_excel(filename, index=False)
-#         resultados_string4.set(f'Los resultados se han guardado en {filename}')
-#     except Exception as e:
-#         messagebox.showerror("Error", str(e))
+############################# NEW FEATURE CLASIFICAR TWEETS ########################################
 
 def classify():
     ''''
-    Función para clasificar los tweets en positivos y negativos
+    Función que realiza la clasificación de los tweets elegidos de un archivo excel, y los clasifica en
+    función de un modelo previamente entrenado. La salida será los tweets con contenido potencialmente relacionado
+    con el terrorismo
     '''
-    # limpiar el label de resultados3
-    resultados_string4.set('')
-    clasificacion = TextBlob("fuck de whites. they will know what it is like to be a minority.")
-    if clasificacion.sentiment.polarity > 0:
-        print('positive')
-    elif clasificacion.sentiment.polarity == 0:
-        print('neutral')
-    else:
-        print('negative')
+    try:
+        # Cargar el modelo y el vectorizador
+        with open('model.pkl', 'rb') as model_file:
+            model = pickle.load(model_file)
+        with open('vectorizer.pkl', 'rb') as vectorizer_file:
+            vectorizer = pickle.load(vectorizer_file)
+        
+        # Abre el cuadro de diálogo para seleccionar el archivo Excel
+        file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
+        if file_path:
+            # Lee el archivo seleccionado
+            tweets = pd.read_excel(file_path)
+        
+        # casting a string para evitar problemas con vectorizer    
+        tweets_contenido = tweets['Contenido'].values.astype(str)
+        # crear vectores numéricos a partir del texto de los tweets
+        lista_vec = vectorizer.transform(tweets_contenido)
 
-    
+        # hacer predicciones de la clase de los tweets
+        predicciones = model.predict(lista_vec)
 
-###############################################################################################
+        # identificar cuáles tweets son de la categoría "es_terrorismo"
+        es_terrorismo = predicciones == 'terrorismo'
+
+        # obtener los tweets clasificados como "terrorismo"
+        #terrorismo_tweets = [t for i, t in enumerate(tweets) if es_terrorismo[i]]
+        
+        # convertir la lista de tweets en un DataFrame
+        terrorismo_df = tweets[es_terrorismo]
+        
+        # si el df no esta vacio lo remarco en la etiqueta en el widget
+        if terrorismo_df.empty:
+            resultados_string4.set('No se han encontrado tweets con contenido terrorista')
+        # Actualizar la etiqueta de resultado en el widget
+        else:
+            # guardar el DataFrame en un archivo Excel
+            output_file_path = 'tweets_terrorismo.xlsx'
+            terrorismo_df.to_excel(output_file_path, index=False)
+            resultados_string4.set(f'Tweets clasificados como terrorismo guardados en: {output_file_path}')
+        
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+    return
+
+############################ VENTANA ######################################################
 
 # Incio del widget
 
@@ -213,7 +221,7 @@ label_palabra = tk.Label(widget,text="Palabra o hastag a buscar: ").grid(column=
 label_fecha_inicio = tk.Label(widget, text="Desde: (yyyy-mm-dd) ").grid(column=0, row=1, sticky=tk.W)
 label_fecha_fin = tk.Label(widget, text="Hasta: (yyyy-mm-dd) ").grid(column=0, row=2, sticky=tk.W)
 # Busqueda por ciudad
-label_ciudad = tk.Label(widget, text="Twitteado desde (ciudad: ").grid(column=0, row=3, sticky=tk.W)
+label_ciudad = tk.Label(widget, text="Twitteado desde (ciudad) : ").grid(column=0, row=3, sticky=tk.W)
 # Busqueda por usuario
 label_usuario = tk.Label(widget, text="Twitteado por (usuario) : ").grid(column=0, row=4, sticky=tk.W)
 # Idioma de los tweets

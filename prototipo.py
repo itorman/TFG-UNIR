@@ -17,9 +17,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-
-
-########################   funciones   #################################
+########################   FUNCIONES   #################################
 
 def search():
     ''''
@@ -79,17 +77,22 @@ def storesearch():
     try:
         # limpiar el label de resultados2
         resultados_string2.set('')
-        # Guardar los tweets en un archivo Excel
-        filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
         tweets = search()
         if tweets:
             df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
 
             # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
             df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
+
+            # ruta guardado
+            # y guardar los tweets en un archivo Excel
+            filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets.xlsx"
+            ruta_carpeta = 'resultados/busquedas/'
+            ruta_completa = ruta_carpeta + filename
+            
             # transfiero el dataframe a un archivo excel
-            df.to_excel(filename, index=False)
-            resultados_string2.set(f'Los resultados se han guardado en {filename}')
+            df.to_excel(ruta_completa, index=False)
+            resultados_string2.set(f'Los resultados se han guardado en:  {ruta_completa}')
         else:
             resultados_string2.set('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
     except Exception as e:
@@ -106,7 +109,6 @@ def cleanData():
         # limpiar el label de resultados3
         resultados_string3.set('')
         # Proceso de limpia de los tweets   
-        filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "__tweets_limpios.xlsx"
         tweets = search()
         if tweets:
             # para evitar de error en la descarga de nltk -->nltk.download()
@@ -147,9 +149,15 @@ def cleanData():
             ## Guardar los tweets limpios en un archivo Excel ##
             # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
             df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
+            
+            # ruta guardado
+            # y guardar los tweets en un archivo Excel
+            filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_limpios.xlsx"
+            ruta_carpeta = 'resultados/limpios/'
+            ruta_completa = ruta_carpeta + filename
             # transfiero el dataframe a un archivo excel
-            df.to_excel(filename, index=False)
-            resultados_string3.set(f'Los resultados se han guardado en {filename}')
+            df.to_excel(ruta_completa, index=False)
+            resultados_string3.set(f'Los resultados se han guardado en:  {ruta_completa}')
         else:
             resultados_string3.set('No se han encontrado tweets. Revisa los parámetros de búsqueda.')
     except Exception as e:
@@ -165,9 +173,9 @@ def classify():
     '''
     try:
         # Cargar el modelo y el vectorizador
-        with open('model.pkl', 'rb') as model_file:
+        with open('./models/model.pkl', 'rb') as model_file:
             model = pickle.load(model_file)
-        with open('vectorizer.pkl', 'rb') as vectorizer_file:
+        with open('./models/vectorizer.pkl', 'rb') as vectorizer_file:
             vectorizer = pickle.load(vectorizer_file)
         
         # Abre el cuadro de diálogo para seleccionar el archivo Excel
@@ -199,21 +207,26 @@ def classify():
         # Actualizar la etiqueta de resultado en el widget
         else:
             # guardar el DataFrame en un archivo Excel
-            output_file_path = 'tweets_terrorismo.xlsx'
-            terrorismo_df.to_excel(output_file_path, index=False)
-            resultados_string4.set(f'Tweets clasificados como terrorismo guardados en: {output_file_path}')
+
+            filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_terrorismo.xlsx"
+            ruta_carpeta = 'resultados/terrorismo/'
+            ruta_completa = ruta_carpeta + filename
+            # transfiero el dataframe a un archivo excel
+            terrorismo_df.to_excel(ruta_completa, index=False)
+            resultados_string4.set(f'Tweets clasificados como terrorismo guardados en: {ruta_completa}')
         
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
     return
+    
 
 ############################ VENTANA ######################################################
 
 # Incio del widget
 
 widget = tk.Tk()
-widget.geometry('1050x430')
+widget.geometry('1275x430')
 widget.title(" TFG Aitor - Twitter")
 # Busqueda por palabra
 label_palabra = tk.Label(widget,text="Palabra o hastag a buscar: ").grid(column=0, row=0, sticky=tk.W)

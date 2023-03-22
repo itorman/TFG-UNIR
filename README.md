@@ -1,5 +1,8 @@
 ## Trabajo de fin de grado de Ingeniería informática del alumno Aitor Sánchez Garzón.
 
+![GUI](https://user-images.githubusercontent.com/30757903/227030858-d44fcef9-64c1-4d58-a5ee-3c162281adc5.jpeg)
+
+
 Durante la última década, la comunicación ha sufrido una metamorfosis total. El desarrollo de aplicaciones para dispositivos móviles, y el masivo uso de estos, ha devenido en una masificación de informaciones y opiniones publicadas en determinadas redes sociales. 
 La gran diferencia entre los medios de comunicación social clásicos, y las actuales redes sociales, radica en que los mensajes publicados en estas últimas, llegan a miles o millones de personas, pudiendo causar potencialmente un daño considerable. Por un lado, la propagación del mensaje se magnifica exponencialmente, afectando directamente a la persona o grupo al que se dirige, y por otro cataliza la radicalización a través de lo que se ha venido a denominar “discurso de odio”.
 

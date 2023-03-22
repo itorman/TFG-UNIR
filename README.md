@@ -1,4 +1,5 @@
 ## Trabajo de fin de grado de Ingeniería informática del alumno Aitor Sánchez Garzón.
+### UNIR (Universidad Internacional de La Rioja)
 
 ![GUI](https://user-images.githubusercontent.com/30757903/227030858-d44fcef9-64c1-4d58-a5ee-3c162281adc5.jpeg)
 

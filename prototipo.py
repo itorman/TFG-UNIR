@@ -113,43 +113,30 @@ def cleanData():
         if tweets:
             # para evitar de error en la descarga de nltk -->nltk.download()
             df = pd.DataFrame(tweets, columns=['Fecha', 'Usuario', 'Displayed name', 'Contenido', 'Ubicacion'])
-            columna_contenido = df['Contenido']
+    
             # Limpiar los tweets
             # Eliminar los caracteres no occidentales
-            columna_contenido = [re.sub(r'[^\x00-\x7F]+', '', texto) for texto in columna_contenido]
-            # eliminar referencias html
-            columna_contenido = [re.sub(r'http\S+', '', texto) for texto in columna_contenido]
-            # eliminar referencias a usuarios
-            columna_contenido = [re.sub(r'@(\w+)', '', texto) for texto in columna_contenido]
-            # eliminar el "#" de los hashtags
-            columna_contenido = [re.sub(r'#', '', texto) for texto in columna_contenido]            
-            # Eliminar los signos de puntuación  ## ESTE REGEX SE HABRÍA DE REVISAR EN CASO DE CIERTOS IDIOMAS, ACENTOS ##
-            columna_contenido = [re.sub(r'[^\w\s]', '', texto) for texto in columna_contenido]
-            # Eliminar los números
-            columna_contenido = [re.sub(r'\d+', '', texto) for texto in columna_contenido]
-            # Eliminar los espacios en blanco
-            columna_contenido = [re.sub(r'\s+', ' ', texto) for texto in columna_contenido]
-        
-            # tokeniza el texto en la columna utilizando la función 'word_tokenize' de la librería nltk
-            tokens = [word_tokenize(texto) for texto in columna_contenido]
-            # mayusculas a minusculas
-            tokens = [[palabra.lower() for palabra in texto] for texto in tokens]
-            # elminna las stopwords (palabras que no aportan significado)
-            stop_words = set(stopwords.words('english')) # Cambiar 'english' por el idioma que deseemos
-            tokens = [[palabra for palabra in texto if not palabra in stop_words] for texto in tokens]
-            # lemantizar los tokens (las convierte a su forma raiz)
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'http\S+', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'@(\w+)', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'#', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'[^\w\s]', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'\d+', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'[^\x00-\x7F]+', '', x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: re.sub(r'\s+', ' ', x))
+    
+            stop_words = set(stopwords.words('english'))
             lemmatizer = WordNetLemmatizer()
-            tokens = [[lemmatizer.lemmatize(palabra) for palabra in texto] for texto in tokens]
-            # unir los tokens en una cadena de texto separados por espacios
-            texto_limpio = [' '.join(texto) for texto in tokens]
-            
-            # añadir la columna con los tweets limpios al dataframe
-            df['Contenido'] = texto_limpio
 
+            # remove stopwords and lemmatize tokens using apply() method
+            df['Contenido'] = df['Contenido'].apply(lambda x: x.lower())
+            df['Contenido'] = df['Contenido'].apply(lambda x: word_tokenize(x))
+            df['Contenido'] = df['Contenido'].apply(lambda x: [word for word in x if word not in stop_words])
+            df['Contenido'] = df['Contenido'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+            df['Contenido'] = df['Contenido'].apply(lambda x: ' '.join(x))
+
+            # remove timezone information using tz_localize() method
+            df['Fecha'] = pd.to_datetime(df['Fecha']).dt.tz_localize(None)
             ## Guardar los tweets limpios en un archivo Excel ##
-            # para evitar el error timezone: Excel does not support datetimes with timezones. Please ensure that datetimes are timezone unaware before writing to Excel.
-            df['Fecha'] = [celda.replace(tzinfo=None) for celda in df['Fecha']]
-            
             # ruta guardado
             # y guardar los tweets en un archivo Excel
             filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_limpios.xlsx"
@@ -173,9 +160,9 @@ def classify():
     '''
     try:
         # Cargar el modelo y el vectorizador
-        with open('./models/model.pkl', 'rb') as model_file:
+        with open('./models/model4.pkl', 'rb') as model_file:
             model = pickle.load(model_file)
-        with open('./models/vectorizer.pkl', 'rb') as vectorizer_file:
+        with open('./models/vectorizer4.pkl', 'rb') as vectorizer_file:
             vectorizer = pickle.load(vectorizer_file)
         
         # Abre el cuadro de diálogo para seleccionar el archivo Excel
@@ -193,7 +180,7 @@ def classify():
         predicciones = model.predict(lista_vec)
 
         # identificar cuáles tweets son de la categoría "es_terrorismo"
-        es_terrorismo = predicciones == 'terrorismo'
+        es_terrorismo = predicciones == 'N'
 
         # obtener los tweets clasificados como "terrorismo"
         #terrorismo_tweets = [t for i, t in enumerate(tweets) if es_terrorismo[i]]

@@ -2,8 +2,6 @@
 
 ![GUI](https://user-images.githubusercontent.com/30757903/227030858-d44fcef9-64c1-4d58-a5ee-3c162281adc5.jpeg)
 
-![GUI2](https://user-images.githubusercontent.com/30757903/227031115-43d31e23-6255-408e-9fa7-229514028dc2.jpeg)
-
 
 
 Durante la última década, la comunicación ha sufrido una metamorfosis total. El desarrollo de aplicaciones para dispositivos móviles, y el masivo uso de estos, ha devenido en una masificación de informaciones y opiniones publicadas en determinadas redes sociales. 

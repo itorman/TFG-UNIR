@@ -14,8 +14,8 @@ En esta memoria, se proporcionará un contexto completo sobre la implementación
 Igualmente se discutirán las herramientas y plataformas utilizadas en el desarrollo del proyecto, incluyendo las librerías y marcos de trabajo empleados para implementar tanto aplicaciones, como los modelos de aprendizaje automático.
 Finalmente, se proporcionarán instrucciones paso a paso para ejecutar y utilizar las herramientas y modelos propuestos, así como ejemplos de su aplicación en situaciones reales de detección de determinado contenido en la red social Twitter.
 
-
+-----------------------------------
 ### Video funcionamiento aplicación
----------------------------------
+-----------------------------------
 
 [![Primera version beta de la aplicación](http://img.youtube.com/vi/c-5JXFkwgCI/0.jpg)](http://www.youtube.com/watch?v=Ic-5JXFkwgCI "Aplicación búsqueda y clasificación de tweets")

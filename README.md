@@ -17,5 +17,5 @@ Finalmente, se proporcionarán instrucciones paso a paso para ejecutar y utiliza
 -----------------------------------
 ### Video funcionamiento aplicación
 -----------------------------------
+[![Primera version beta de la aplicación](http://img.youtube.com/vi/c-5JXFkwgCI/0.jpg)](http://www.youtube.com/watch?v=c-5JXFkwgCI "Aplicación búsqueda y clasificación de tweets")
 
-[![Primera version beta de la aplicación](http://img.youtube.com/vi/c-5JXFkwgCI/0.jpg)](http://www.youtube.com/watch?v=Ic-5JXFkwgCI "Aplicación búsqueda y clasificación de tweets")

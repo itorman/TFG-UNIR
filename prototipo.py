@@ -180,7 +180,7 @@ def classify():
         predicciones = model.predict(lista_vec)
 
         # identificar cuáles tweets son de la categoría "es_terrorismo"
-        es_terrorismo = predicciones == 'N'
+        es_terrorismo = predicciones == 'T'
 
         # obtener los tweets clasificados como "terrorismo"
         #terrorismo_tweets = [t for i, t in enumerate(tweets) if es_terrorismo[i]]

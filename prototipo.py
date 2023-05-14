@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
@@ -10,7 +11,7 @@ from tqdm import tqdm
 import nltk
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-nltk.download('93mwordnet')
+nltk.download('wordnet')
 nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.corpus import stopwords
@@ -159,53 +160,58 @@ def classify():
     con el terrorismo
     '''
     try:
+        # verificar la existencia de los archivos antes de abrirlos
+        model_file_path = './models/model4.pkl'
+        vectorizer_file_path = './models/vectorizer4.pkl'
+
+        if not os.path.exists(model_file_path):
+            raise FileNotFoundError(f"No se encontró el archivo del modelo: {model_file_path}")
+        if not os.path.exists(vectorizer_file_path):
+            raise FileNotFoundError(f"No se encontró el archivo del vectorizador: {vectorizer_file_path}")
+
         # Cargar el modelo y el vectorizador
-        with open('./models/model4.pkl', 'rb') as model_file:
+        with open(model_file_path, 'rb') as model_file:
             model = pickle.load(model_file)
-        with open('./models/vectorizer4.pkl', 'rb') as vectorizer_file:
+        with open(vectorizer_file_path, 'rb') as vectorizer_file:
             vectorizer = pickle.load(vectorizer_file)
-        
+
         # Abre el cuadro de diálogo para seleccionar el archivo Excel
         file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
+
         if file_path:
             # Lee el archivo seleccionado
             tweets = pd.read_excel(file_path)
-        
-        # casting a string para evitar problemas con vectorizer    
-        tweets_contenido = tweets['Contenido'].values.astype(str)
-        # crear vectores numéricos a partir del texto de los tweets
-        lista_vec = vectorizer.transform(tweets_contenido)
 
-        # hacer predicciones de la clase de los tweets
-        predicciones = model.predict(lista_vec)
+            # casting a string para evitar problemas con vectorizer    
+            tweets_contenido = tweets['Contenido'].values.astype(str)
+            # crear vectores numéricos a partir del texto de los tweets
+            lista_vec = vectorizer.transform(tweets_contenido)
 
-        # identificar cuáles tweets son de la categoría "es_terrorismo"
-        es_terrorismo = predicciones == 'T'
+            # hacer predicciones de la clase de los tweets
+            predicciones = model.predict(lista_vec)
 
-        # obtener los tweets clasificados como "terrorismo"
-        #terrorismo_tweets = [t for i, t in enumerate(tweets) if es_terrorismo[i]]
-        
-        # convertir la lista de tweets en un DataFrame
-        terrorismo_df = tweets[es_terrorismo]
-        
-        # si el df no esta vacio lo remarco en la etiqueta en el widget
-        if terrorismo_df.empty:
-            resultados_string4.set('No se han encontrado tweets con contenido terrorista')
-        # Actualizar la etiqueta de resultado en el widget
-        else:
-            # guardar el DataFrame en un archivo Excel
+            # identificar cuáles tweets son de la categoría "es_terrorismo"
+            # en el dataset utilizado, el label T indica que el tweet es de la categoría "terrorismo"
+            terrorismo_df = tweets[predicciones == 'T']
 
-            filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_terrorismo.xlsx"
-            ruta_carpeta = 'resultados/terrorismo/'
-            ruta_completa = ruta_carpeta + filename
-            # transfiero el dataframe a un archivo excel
-            terrorismo_df.to_excel(ruta_completa, index=False)
-            resultados_string4.set(f'Tweets clasificados como terrorismo guardados en: {ruta_completa}')
+            # si el df no esta vacio lo remarco en la etiqueta en el widget
+            if terrorismo_df.empty:
+                resultados_string4.set('No se han encontrado tweets con contenido terrorista')
+            else:
+                # guardar el DataFrame en un archivo Excel
+
+                filename = datetime.now().strftime("%Y%m%d_%H%M%S") + "_tweets_terrorismo.xlsx"
+                ruta_carpeta = 'resultados/terrorismo/'
+                ruta_completa = ruta_carpeta + filename
+                # transfiero el dataframe a un archivo excel
+                terrorismo_df.to_excel(ruta_completa, index=False)
+                resultados_string4.set(f'Tweets clasificados como terrorismo guardados en: {ruta_completa}')
         
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
     return
+
     
 
 ############################ VENTANA ######################################################

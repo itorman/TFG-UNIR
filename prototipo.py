@@ -192,7 +192,7 @@ def classify():
 
             # identificar cuáles tweets son de la categoría "es_terrorismo"
             # en el dataset utilizado, el label T indica que el tweet es de la categoría "terrorismo"
-            terrorismo_df = tweets[predicciones == 'T']
+            terrorismo_df = tweets[predicciones == 'N']
 
             # si el df no esta vacio lo remarco en la etiqueta en el widget
             if terrorismo_df.empty:

@@ -14,8 +14,18 @@ En esta memoria, se proporcionará un contexto completo sobre la implementación
 Igualmente se discutirán las herramientas y plataformas utilizadas en el desarrollo del proyecto, incluyendo las librerías y marcos de trabajo empleados para implementar tanto aplicaciones, como los modelos de aprendizaje automático.
 Finalmente, se proporcionarán instrucciones paso a paso para ejecutar y utilizar las herramientas y modelos propuestos, así como ejemplos de su aplicación en situaciones reales de detección de determinado contenido en la red social Twitter.
 
+
 -----------------------------------
 ### Video funcionamiento aplicación
 -----------------------------------
-[![Primera version beta de la aplicación](http://img.youtube.com/vi/c-5JXFkwgCI/0.jpg)](http://www.youtube.com/watch?v=c-5JXFkwgCI "Aplicación búsqueda y clasificación de tweets")
+[![Funcionamiento aplicación](https://img.youtube.com/vi/M7gv71N6dwg/0.jpg)](https://youtu.be/M7gv71N6dwg "Aplicación búsqueda y clasificación de tweets")
 
+-----------------------------------
+### Video con la estructura de directorios y distintos ficheros
+-----------------------------------
+[![Estructura de directorios y distintos ficheros](https://img.youtube.com/vi/yNNKi3r1JQo/0.jpg)](https://youtu.be/yNNKi3r1JQo "Aplicación búsqueda y clasificación de tweets")
+
+-----------------------------------
+### Video con explicación del modelo
+-----------------------------------
+[![Explicación del modelo](https://img.youtube.com/vi/YYCA7AtKmiQ/0.jpg)](https://youtu.be/YYCA7AtKmiQ "Aplicación búsqueda y clasificación de tweets")

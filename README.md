@@ -43,12 +43,13 @@ Primero necesitarás una aplicación que proporcione un servidor X11 para Mac, c
 
    ```bash
    xhost + 127.0.0.1
-   '''
+   
 
 Ahora puedes ejecutar tu contenedor Docker con las opciones -e y -v como se explicó anteriormente, pero también necesitarás agregar la opción --net=host para que tu contenedor pueda comunicarse con el servidor X11:
-    '''bash
+
+    ```bash
     docker run -it --net=host -e DISPLAY=host.docker.internal:0 aitorman/aitor-tfg-unir
-    '''
+    
 
 ### En Windows
 

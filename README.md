@@ -25,12 +25,10 @@ La aplicación tiene las siguientes funcionalidades:
 A final de este texto introductorio encontraréis tres videos explicativos de como funciona la aplicación, y una breve introducción a los ficheros que conforman la misma, así como una breve referencia a la creación del modelo generado para clasificar los tweets.
 
 
-Al objeto de facilitar la posible ejecución de la aplicación en máquinas locales, he generado también una imagen Docker de la aquella. La misma se encuentra en el fichero aitor-tfg-unir.tar. 
-También se puede encontrar en Docker Hub.
+Al objeto de facilitar la posible ejecución de la aplicación en máquinas locales, he generado también una imagen Docker de la aquella. La misma se encuentra en Docker Hub (https://hub.docker.com/repositories/aitorman).
 
 ## Instrucciones para ejecutar la aplicación usando Docker
 
-### Usando Docker Hub
 
 1. **Descargar la imagen desde Docker Hub**. Para hacerlo, necesitarás abrir tu terminal y ejecutar el siguiente comando:
 
@@ -45,21 +43,6 @@ También se puede encontrar en Docker Hub.
     docker run -p 80:80 aitorman/aitor-tfg-unir
     ```
     Esto iniciará el contenedor en tu máquina y expondrá el puerto 80 del contenedor al puerto 80 de tu máquina local. 
-
-### Usando un archivo `.tar`
-
-1. **Cargar la imagen desde el archivo `.tar`**. En primer lugar, necesitarás obtener el archivo `.tar` que contiene la imagen de Docker. La misma se encuentra en la raiz del directorio del presente proyecto. Para cargar la imagen en tu sistema, ejecuta:
-
-    ```bash
-    docker load -i aitor-tfg-unir.tar
-    ```
-    
-2. **Ejecutar la imagen**. Una vez cargada la imagen en tu sistema, puedes ejecutarla con el siguiente comando:
-
-    ```bash
-    docker run -p 80:80 aitor-tfg-unir
-    ```
-    Esto iniciará el contenedor y expondrá el puerto 80 del contenedor al puerto 80 de tu máquina local, permitiéndote interactuar con la aplicación.
 
 
 Recuerda que para ejecutar tu aplicación necesitaras tener Docker instalado en tu sistema. 

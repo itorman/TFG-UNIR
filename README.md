@@ -46,11 +46,12 @@ Primero necesitarás una aplicación que proporcione un servidor X11 para Mac, c
    ```
 
 Ahora puedes ejecutar tu contenedor Docker con las opciones -e y -v como se explicó anteriormente, pero también necesitarás agregar la opción --net=host para que tu contenedor pueda comunicarse con el servidor X11:
-    
-    ```bash
-    docker run -it --net=host -e DISPLAY=host.docker.internal:0 aitorman/aitor-tfg-unir
-    ```
 
+
+   ```bash
+   docker run -it --net=host -e DISPLAY=host.docker.internal:0 aitorman/aitor-tfg-unir
+   ```
+    
 ### En Windows
 
 1. Instala VcXsrv Windows X Server: Puedes descargar [VcXsrv Windows X Server](https://sourceforge.net/projects/vcxsrv/) y seguir las instrucciones de instalación.
@@ -59,9 +60,11 @@ Ahora puedes ejecutar tu contenedor Docker con las opciones -e y -v como se expl
 
 3. Configura la variable de entorno DISPLAY: Abre PowerShell o la terminal de tu elección y agrega la dirección IP de tu servidor X a la variable de entorno DISPLAY. Puedes hacerlo con el siguiente comando:
 
-    ```bash
-    setx DISPLAY [tu-ip]:0.0
-    ```
+
+   ```bash
+   setx DISPLAY [tu-ip]:0.0
+   ```
+
     Recuerda reemplazar [tu-ip] con la dirección IP de tu servidor X en las instrucciones.
 
 4. Ejecuta tu contenedor Docker: Ahora puedes ejecutar tu contenedor Docker con la opción `-e` para pasar la variable de entorno DISPLAY a tu contenedor:

@@ -29,23 +29,48 @@ Al objeto de facilitar la posible ejecución de la aplicación en máquinas loca
 
 ## Instrucciones para ejecutar la aplicación usando Docker
 
+### En Mac
 
-1. **Descargar la imagen desde Docker Hub**. Para hacerlo, necesitarás abrir tu terminal y ejecutar el siguiente comando:
+Primero necesitarás una aplicación que proporcione un servidor X11 para Mac, como XQuartz. Aquí te dejo los pasos generales:
+
+1. Instala [XQuartz](https://www.xquartz.org/) en tu Mac.
+
+2. Abre XQuartz y luego ve a las preferencias (`Command` + `,`). En la pestaña de seguridad, asegúrate de que esté marcada la opción "Allow connections from network clients".
+
+3. Reinicia XQuartz para que los cambios surtan efecto.
+
+4. Abre una terminal y ejecuta el siguiente comando para permitir que tu localhost se conecte al nuevo servidor X11:
+
+   ```bash
+   xhost + 127.0.0.1
+   '''
+
+Ahora puedes ejecutar tu contenedor Docker con las opciones -e y -v como se explicó anteriormente, pero también necesitarás agregar la opción --net=host para que tu contenedor pueda comunicarse con el servidor X11:
+    '''bash
+    docker run -it --net=host -e DISPLAY=host.docker.internal:0 aitorman/aitor-tfg-unir
+    '''
+
+### En Windows
+
+1. Instala VcXsrv Windows X Server: Puedes descargar [VcXsrv Windows X Server](https://sourceforge.net/projects/vcxsrv/) y seguir las instrucciones de instalación.
+
+2. Inicia XLaunch: Una vez instalado VcXsrv, puedes iniciar XLaunch desde tu menú de inicio. Te guiará a través de varias pantallas de configuración, puedes mantener los valores predeterminados y luego ejecutar el servidor X.
+
+3. Configura la variable de entorno DISPLAY: Abre PowerShell o la terminal de tu elección y agrega la dirección IP de tu servidor X a la variable de entorno DISPLAY. Puedes hacerlo con el siguiente comando (reemplaza [tu-ip] con la dirección IP de tu servidor X):
 
     ```bash
-    docker pull aitorman/aitor-tfg-unir
+    setx DISPLAY [tu-ip]:0.0
     ```
-    Esto descargará la imagen de Docker y la almacenará en tu máquina local.
+    Recuerda reemplazar [tu-ip] con la dirección IP de tu servidor X en las instrucciones.
 
-2. **Ejecutar la imagen**. Una vez descargada la imagen, puedes ejecutarla en tu máquina con el siguiente comando:
+4. Ejecuta tu contenedor Docker: Ahora puedes ejecutar tu contenedor Docker con la opción `-e` para pasar la variable de entorno DISPLAY a tu contenedor:
 
     ```bash
-    docker run -p 80:80 aitorman/aitor-tfg-unir
+    docker run -it -e DISPLAY=%DISPLAY% aitorman/aitor-tfg-unir
     ```
-    Esto iniciará el contenedor en tu máquina y expondrá el puerto 80 del contenedor al puerto 80 de tu máquina local. 
 
 
-Recuerda que para ejecutar tu aplicación necesitaras tener Docker instalado en tu sistema. 
+Ten en cuenta que para ejecutar tu aplicación necesitaras tener Docker instalado en tu sistema. 
 
 
 -----------------------------------

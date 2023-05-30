@@ -22,7 +22,7 @@ La aplicación tiene las siguientes funcionalidades:
 * Interfaz gráfica de usuario intuitiva y fácil de usar: El proyecto proporciona una interfaz gráfica de usuario (GUI) desarrollada con la librería Tkinter que facilita la interacción con la aplicación y permitea los usuarios realizar búsquedas, analizar y procesar los datos de manera sencilla e intuitiva.
 
 
-A final de este texto introductorio encontraréis tres videos explicativos de como funciona la aplicación, una breve introducción a los ficheros que conforman la misma, así como una breve referencia a la creación del modelo generado para clasificar los tweets.
+A final de este texto introductorio encontraréis tres videos explicativos de como funciona la aplicación, y una breve introducción a los ficheros que conforman la misma, así como una breve referencia a la creación del modelo generado para clasificar los tweets.
 
 
 Al objeto de facilitar la posible ejecución de la aplicación en máquinas locales, he generado también una imagen Docker de la aquella. La misma se encuentra en el fichero aitor-tfg-unir.tar. 

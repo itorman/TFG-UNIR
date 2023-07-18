@@ -4,24 +4,6 @@
 ![GUI](https://user-images.githubusercontent.com/30757903/227030858-d44fcef9-64c1-4d58-a5ee-3c162281adc5.jpeg)
 
 
-Durante la última década, la comunicación ha sufrido una metamorfosis total. El desarrollo de aplicaciones para dispositivos móviles, y el masivo uso de estos, ha devenido en una masificación de informaciones y opiniones publicadas en determinadas redes sociales. 
-La gran diferencia entre los medios de comunicación social clásicos, y las actuales redes sociales, radica en que los mensajes publicados en estas últimas, llegan a miles o millones de personas, pudiendo causar potencialmente un daño considerable. Por un lado, la propagación del mensaje se magnifica exponencialmente, afectando directamente a la persona o grupo al que se dirige, y por otro cataliza la radicalización a través de lo que se ha venido a denominar “discurso de odio”.
-
-La Constitución española garantiza el derecho a la libertad de expresión, pero si las opiniones y comentarios en estas redes sociales se consideran ofensivos o insultantes, podrían constituir un delito de incitación al odio. Dependiendo del contenido, estos comentarios también podrían ser considerados como apología del terrorismo. Es por ello por lo que las fuerzas y cuerpos de seguridad del estado necesitan detectar estos mensajes para determinar si representan un delito y, en caso afirmativo, actuar en consecuencia.
-
-En mi TFG (Trabajo de Fin de Grado) he desarrollado una aplicación de escritorio para la extracción y salvado de datos de la red social Twitter en ficheros de tipo Excel. La aplicación permite su procesamiento y análisis a través de un modelo, generado previamente mediante técnicas de aprendizaje automático, para la clasificación de los mensajes extraídos en aquellos que potencialmente promuevan o están a favor del terrorismo islámico, y de los que no. 
-
-La aplicación tiene las siguientes funcionalidades:
-
-* Extracción eficiente de datos de Twitter: El proyecto implementa una solución que permite la captación eficiente y precisa de tweets basados en criterios específicos, como palabras clave, hashtags o usuarios. 
-
-* Limpieza y preprocesamiento de datos: Un objetivo fundamental del proyecto es garantizar la calidad de los datos mediante la implementación de técnicas de procesamiento del lenguaje natural (NLP) para limpiar y preprocesar los tweets captado. Esto implica la eliminación de ruido, como caracteres especiales, enlaces, emojis y menciones, así como la tokenización y normalización del texto para facilitar el análisis posterior.
-
-* Clasificación automatizada de tweets: La aplicación es capaz de clasificar automáticamente los tweets recolectados en función de un modelo previamente entrenado. Esto permite a los usuarios identificar rápidamente temas relevantes, detectar discursos favorecedores del terrorismo islámico, y analizar tendencias y patrones en las conversaciones de Twitter.
-
-* Interfaz gráfica de usuario intuitiva y fácil de usar: El proyecto proporciona una interfaz gráfica de usuario (GUI) desarrollada con la librería Tkinter que facilita la interacción con la aplicación y permitea los usuarios realizar búsquedas, analizar y procesar los datos de manera sencilla e intuitiva.
-
-
 Para ejecutar la aplicación se debe configurar el entorno de ejcución con Python 3.8, y con las dependencias especificadas en fichero 'requirements.txt'. 
 Al final de este texto introductorio encontraréis tres videos explicativos de como funciona la aplicación, y una breve introducción a los ficheros que conforman la misma, así como una breve referencia a la creación del modelo generado para clasificar los tweets.
 

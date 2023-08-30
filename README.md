@@ -1,6 +1,9 @@
 ## Trabajo de fin de grado de Ingeniería informática del alumno Aitor Sánchez Garzón.
 ### UNIR (Universidad Internacional de La Rioja)
 
+En la era digital, las redes sociales como Twitter han generado una gran cantidad de información, convirtiéndose en una fuente valiosa de datos y opiniones sobre diversos temas. El presente trabajo académico se centra en el diseño y desarrollo de un prototipo de aplicación que facilita la búsqueda, análisis y clasificación de tweets utilizando técnicas de procesamiento de lenguaje natural y aprendizaje automático, con un enfoque particular en la detección de contenido que favorece el discurso del terrorismo yihadista. Este trabajo abarca la revisión de la literatura relacionada con el análisis de tweets, procesamiento de lenguaje natural y aprendizaje automático, así como la selección e implementación de herramientas y librerías apropiadas para el desarrollo del prototipo. De igual manera, se incluye la evaluación del desempeño y la eficacia de la aplicación mediante pruebas experimentales y la identificación de posibles mejoras y extensiones futuras, entre las que se incluyen la posibilidad de adaptarse para identificar y clasificar cualquier otro tipo de contenido, siempre que se ajuste el modelo entrenado de manera adecuada.![image](https://github.com/itorman/TFG-UNIR/assets/30757903/e6f9e6a3-42ec-44aa-a026-d7a915e475e2)
+
+
 ![GUI](https://user-images.githubusercontent.com/30757903/227030858-d44fcef9-64c1-4d58-a5ee-3c162281adc5.jpeg)
 
 
